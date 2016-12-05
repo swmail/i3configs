@@ -156,23 +156,26 @@ bar {
 ######################
 # Pulse Audio controls
 # Increase sound volume
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 -- +5% && killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% && killall -SIGUSR1 i3status
 # Decrease sound volume
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -- -5% && killall -SIGUSR1 i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% && killall -SIGUSR1 i3status
 # Mute sound
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute -- 0 toggle && killall -SIGUSR1 i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle && killall -SIGUSR1 i3status
 
 bindsym --release $mod+x exec --no-startup-id import /tmp/latest-screenshot.png
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
-bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec xbacklight -inc 5 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 5 # decrease screen brightness
 
 # Lock screen
 bindsym $mod+Ctrl+l exec i3lock -d -c 300a24
 
 # File manager
 bindsym $mod+Ctrl+e exec nautilus --no-desktop
+
+# Calc
+bindsym Ctrl+Shift+F1 exec gnome-calculator
 
 # Switch workspace
 bindsym $mod+Prior workspace next
@@ -181,13 +184,30 @@ bindsym $mod+Next workspace prev
 # Add VGA1 output
 bindsym XF86Display exec --no-startup-id xrandr --output VGA1 --auto --right-of LVDS1
 # Reset output config
-bindsym $mod+F8 exec --no-startup-id xrandr -s 0
+bindsym $mod+F7 exec --no-startup-id xrandr -s 0
 # xrandr --output VGA1 --mode 1024x768 --same-as LVDS1
 
 # Autostart
 exec --no-startup-id nm-applet
 exec --no-startup-id "setxkbmap -model pc105 -layout de,ru -option grp:alt_space_toggle,grp_led:scroll"
 #exec --no-startup-id "setxkbmap -model pc105 -layout de,ru -option grp:alt_space_toggle"
+exec --no-startup-id xrandr --output DVI-0 --rotate left
 # Set background color
 exec_always xsetroot -solid "#333333"
 #exec_always xsetroot -solid "#300a24"
+exec --no-startup-id xautolock -detectsleep -time 3 -locker "i3lock -d -c 000070" -notify 30 -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 30 seconds'"
+
+set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id ~/.local/bin/i3exit.sh lock, mode "default"
+    bindsym e exec --no-startup-id ~/.local/bin/i3exit.sh logout, mode "default"
+    bindsym s exec --no-startup-id ~/.local/bin/i3exit.sh suspend, mode "default"
+    bindsym h exec --no-startup-id ~/.local/bin/i3exit.sh hibernate, mode "default"
+    bindsym r exec --no-startup-id ~/.local/bin/i3exit.sh reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id ~/.local/bin/i3exit.sh shutdown, mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Pause mode "$mode_system"
